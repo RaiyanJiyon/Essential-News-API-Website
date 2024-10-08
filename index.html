@@ -87,6 +87,23 @@
                 </h2>
             </div>
         </div>
+
+        <!-- sort by view section -->
+        <section class="navbar mt-10 flex-col md:flex-row space-y-10 md:space-y-0">
+            <div class="flex-1 gap-3">
+                <span class="text-lg">Sort By View:</span>
+                <select name="cars" id="cars" class="py-2 px-4 rounded-[4px]">
+                    <option value="volvo">Default</option>
+                    <option value="saab">Saab</option>
+                    <option value="opel">Opel</option>
+                    <option value="audi">Audi</option>
+                </select>
+            </div>
+            <div class="flex-none gap-6 md:gap-3">
+                <button class="btn bg-primary text-white font-bold">Today’s Pick</button>
+                <button class="btn btn-outline btn-primary">Trending</button>
+            </div>
+        </section>
     </main>
     <footer class="hidden footer bg-neutral text-neutral-content p-10">
         <aside>
