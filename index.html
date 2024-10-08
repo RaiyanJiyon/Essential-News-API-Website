@@ -4,12 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bus Ticket Landing Page</title>
+    <title>Essential News</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <!-- google font family added -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+        rel="stylesheet">
     <!-- daisy UI cdn -->
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -18,7 +20,8 @@
             theme: {
                 extend: {
                     colors: {
-                        clifford: '#da373d',
+                        'primary-color': '#5D5FEF',
+                        'secondary-color': '#A3A3A3',
                     },
                     fontFamily: {
                         'roboto': ["Roboto", "sans-serif"],
@@ -29,9 +32,44 @@
     </script>
 </head>
 
-<body class="font-inter">
-    <header>
-        <h1>Hello</h1>
+<body class="font-roboto">
+    <header class="w-11/12 mx-auto mt-4">
+        <!-- navbar -->
+        <div class="navbar bg-base-100">
+            <div class="flex-1 gap-3">
+                <a class="btn btn-ghost bg-primary-color text-white font-bold text-lg">
+                    News
+                </a>
+                <span class="text-lg text-primary-color font-bold">Portal</span>
+            </div>
+            <div class="flex-none">
+                <div class="dropdown dropdown-end">
+                    <ul class="menu menu-horizontal px-1 text-secondary-color">
+                        <li><a>News</a></li>
+                        <li><a>Blog</a></li>
+                    </ul>
+                </div>
+                <div class="dropdown dropdown-end">
+                    <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+                        <div class="w-10 rounded-full">
+                            <img alt="Tailwind CSS Navbar component"
+                                src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                        </div>
+                    </div>
+                    <ul tabindex="0"
+                        class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+                        <li>
+                            <a class="justify-between">
+                                Profile
+                                <span class="badge">New</span>
+                            </a>
+                        </li>
+                        <li><a>Settings</a></li>
+                        <li><a>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </header>
     <main></main>
     <footer></footer>
