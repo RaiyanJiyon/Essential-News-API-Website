@@ -28,4 +28,5 @@ const displayCategories = (categories) => {
     newsCategories.append(categoriesList);
 }
 
+
 loadCategory();
