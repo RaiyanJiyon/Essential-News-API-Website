@@ -16,10 +16,6 @@ const displayCategories = (categories) => {
     const categoriesList = document.createElement('ul');
     categoriesList.classList.add('w-full', 'menu', 'menu-horizontal', 'px-1', 'justify-around', 'items-center', 'text-[#858585]')
 
-    const homeItem = document.createElement('li');
-    homeItem.textContent = 'Home';
-    categoriesList.appendChild(homeItem);
-
     categories.forEach(category => {
         const categoryItem = document.createElement('li');
         categoryItem.classList.add('category-button');
@@ -54,11 +50,24 @@ const categoriesWiseNews = async (categoryId) => {
 } 
 
 const addCategoryEventListeners = () => {
-    document.querySelectorAll('.category-button').forEach((button) => {
+    const buttons = document.querySelectorAll('.category-button');
+    
+    buttons.forEach((button) => {
         button.addEventListener('click', function() {
+            // Remove active class from all buttons
+            buttons.forEach(btn => {
+                btn.classList.remove('text-primary-color', 'font-extrabold', 'underline');
+                btn.style.backgroundColor = ''; // Reset background color
+            });
+            
+            // Add active class to clicked button
+            this.classList.add('text-primary-color', 'font-extrabold', 'underline');
+            
             const categoryId = this.getAttribute('data-category-id');
             if (categoryId) {
                 categoriesWiseNews(categoryId);
+            } else if (this.textContent === 'Home') {
+                loadNews(); // Assuming you want to load default news for Home
             } else {
                 console.error('Category ID not found');
             }
