@@ -36,6 +36,7 @@ const displayCategories = (categories) => {
 
 // Updated to properly use the categoryId parameter
 const categoriesWiseNews = async (categoryId) => {
+    loadingSpinner(true);
     try {
         const response = await fetch(`https://openapi.programming-hero.com/api/news/category/${categoryId}`);
         const jsonData = await response.json();
@@ -44,7 +45,9 @@ const categoriesWiseNews = async (categoryId) => {
         // Clear and display new news
         const newsCard = document.getElementById('news-card');
         newsCard.innerHTML = ''; // Clear existing news
-        displayNews(newsData);
+        setTimeout(() => {
+            displayNews(newsData);
+        }, 1000);
     } catch (error) {
         console.error('Category news Error', error);
     }
@@ -64,11 +67,16 @@ const addCategoryEventListeners = () => {
 }
 
 const loadNews = async () => {
+    loadingSpinner(true);
+
     try {
         const response = await fetch('https://openapi.programming-hero.com/api/news/category/01');
         const jsonData = await response.json();
         const newsData = jsonData.data;
-        displayNews(newsData);
+
+        setTimeout(() => {
+            displayNews(newsData);
+        }, 1000);
     } catch (error) {
         console.error('Data load error', error);
     }
@@ -79,6 +87,7 @@ const displayNews = (newsData) => {
     const noSearchMessage = document.getElementById('no-search-message');
     
     if (!newsData || newsData.length === 0) {
+        loadingSpinner(false);
         noSearchMessage.classList.remove('hidden');
         newsCard.classList.add('hidden');
         return;
@@ -135,6 +144,18 @@ const displayNews = (newsData) => {
 
         newsCard.appendChild(cardDiv);
     });
+
+    loadingSpinner(false);
+}
+
+const loadingSpinner = (isLoading) => {
+    const spinner = document.getElementById('spinner');
+
+    if (isLoading) {
+        spinner.classList.remove('hidden');
+    } else {
+        spinner.classList.add('hidden');
+    }
 }
 
 // Helper function to generate star SVGs
