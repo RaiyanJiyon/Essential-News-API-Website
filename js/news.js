@@ -11,6 +11,7 @@ const loadCategory = async () => {
 
 const displayCategories = (categories) => {
     const newsCategories = document.getElementById('news-categories');
+    newsCategories.innerHTML = ''; // Clear existing categories if any
 
     const categoriesList = document.createElement('ul');
     categoriesList.classList.add('w-full', 'menu', 'menu-horizontal', 'px-1', 'justify-around', 'items-center', 'text-[#858585]')
@@ -21,11 +22,45 @@ const displayCategories = (categories) => {
 
     categories.forEach(category => {
         const categoryItem = document.createElement('li');
+        categoryItem.classList.add('category-button');
+        categoryItem.setAttribute('data-category-id', category.category_id);
         categoryItem.innerHTML = `<a>${category.category_name || ''}</a>`;
         categoriesList.appendChild(categoryItem);
     });
 
     newsCategories.append(categoriesList);
+
+    // Add event listeners after creating the buttons
+    addCategoryEventListeners();
+}
+
+// Updated to properly use the categoryId parameter
+const categoriesWiseNews = async (categoryId) => {
+    try {
+        const response = await fetch(`https://openapi.programming-hero.com/api/news/category/${categoryId}`);
+        const jsonData = await response.json();
+        const newsData = jsonData.data;
+        
+        // Clear and display new news
+        const newsCard = document.getElementById('news-card');
+        newsCard.innerHTML = ''; // Clear existing news
+        displayNews(newsData);
+    } catch (error) {
+        console.error('Category news Error', error);
+    }
+} 
+
+const addCategoryEventListeners = () => {
+    document.querySelectorAll('.category-button').forEach((button) => {
+        button.addEventListener('click', function() {
+            const categoryId = this.getAttribute('data-category-id');
+            if (categoryId) {
+                categoriesWiseNews(categoryId);
+            } else {
+                console.error('Category ID not found');
+            }
+        });
+    });
 }
 
 const loadNews = async () => {
@@ -33,16 +68,27 @@ const loadNews = async () => {
         const response = await fetch('https://openapi.programming-hero.com/api/news/category/01');
         const jsonData = await response.json();
         const newsData = jsonData.data;
-        displayData(newsData);
+        displayNews(newsData);
     } catch (error) {
         console.error('Data load error', error);
     }
 }
 
-const displayData = (newsData) => {
+const displayNews = (newsData) => {
     const newsCard = document.getElementById('news-card');
+    
+    if (!newsData || newsData.length === 0) {
+        newsCard.innerHTML = '<p>No news found for this category</p>';
+        return;
+    }
 
     newsData.forEach(data => {
+        const truncatedDetails = data.details 
+        ? (data.details.length > 100 
+            ? data.details.slice(0, 800) + '...' 
+            : data.details)
+        : 'Details not available';
+
         const cardDiv = document.createElement('div');
         cardDiv.classList.add('hero', 'bg-white', 'mt-14', 'rounded-xl');
         cardDiv.innerHTML = `
@@ -50,24 +96,21 @@ const displayData = (newsData) => {
                 <img src="${data.thumbnail_url}" class="max-w-sm rounded-lg shadow-2xl" />
                 <div>
                     <h1 class="text-2xl font-bold">${data.title || 'Title not available'}</h1>
-                    <p class="pt-2 text-[#949494]">${data.details || 'Details not available'}</p>
+                    <p class="pt-2 text-[#949494]">${truncatedDetails}</p>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:flex justify-between items-center mt-6 gap-2">
-                        <!-- author details -->
                         <div class="flex items-center gap-2">
                             <div class="avatar">
                                 <div class="w-12 rounded-full">
-                                    <img src="${data.author.img}" />
+                                    <img src="${data.author?.img}" />
                                 </div>
                             </div>
                             <div>
-                                <h4>${data.author.name || 'Author name not available'}</h4>
+                                <h4>${data.author?.name || 'Author name not available'}</h4>
                                 <p class="text-[#949494] text-sm">
-                                    ${data.author.published_date || 'Author name not available'}
+                                    ${data.author?.published_date || 'Date not available'}
                                 </p>
                             </div>
                         </div>
-
-                        <!-- views -->
                         <div class="flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                 stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -80,26 +123,12 @@ const displayData = (newsData) => {
                                 ${data.total_view || 'View not available'}
                             </h3>
                         </div>
-
-                        <!-- rating -->
-                        <div class="flex items-center cursor-pointer">
-                            ${generateStars(5)}
-                        </div>
-
-                        <!-- arrow -->
-                        <div class="w-10 h-10 bg-primary-color rounded-full p-2 cursor-pointer hover:bg-gray-500">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke-width="1.5" stroke="currentColor" class="size-6 text-white">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                            </svg>
-                        </div>
                     </div>
                 </div>
             </div>
         `;
 
-        newsCard.append(cardDiv);
+        newsCard.appendChild(cardDiv);
     });
 }
 
@@ -117,8 +146,6 @@ const generateStars = (count) => {
     }
     return stars;
 }
-
-
 
 loadCategory();
 loadNews();
