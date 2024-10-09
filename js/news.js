@@ -76,12 +76,17 @@ const loadNews = async () => {
 
 const displayNews = (newsData) => {
     const newsCard = document.getElementById('news-card');
+    const noSearchMessage = document.getElementById('no-search-message');
     
     if (!newsData || newsData.length === 0) {
-        newsCard.innerHTML = '<p>No news found for this category</p>';
+        noSearchMessage.classList.remove('hidden');
+        newsCard.classList.add('hidden');
         return;
     }
 
+    noSearchMessage.classList.add('hidden');
+    newsCard.classList.remove('hidden');
+    
     newsData.forEach(data => {
         const truncatedDetails = data.details 
         ? (data.details.length > 100 
