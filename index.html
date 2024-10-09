@@ -130,6 +130,65 @@
             </div>
         </section>
 
+        <!-- modal code -->
+        <section>
+            <dialog id="my_modal_5" class="modal modal-bottom sm:modal-middle">
+                <div class="modal-box w-11/12 mx-auto p-10">
+                    <h2 class="text-lg font-bold">Ukraine receives more military aid from allies on its independence day
+                    </h2>
+
+                    <div class="divider"></div>
+
+                    <div class="">
+                        <figure class="w-full text-center">
+                            <img class="w-full rounded-lg" src="${petData.image}" alt="${petData.image}"
+                                class="w-1/2 mx-auto" />
+                        </figure>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:flex justify-between items-center mt-6 gap-2">
+                        <div class="flex items-center gap-2">
+                            <div class="avatar">
+                                <div class="w-12 rounded-full">
+                                    <img src="${data.author?.img}" />
+                                </div>
+                            </div>
+                            <div>
+                                <h4>${data.author?.name || 'Author name not available'}</h4>
+                                <p class="text-[#949494] text-sm">
+                                    ${data.author?.published_date || 'Date not available'}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>
+                            <h3 class="text-lg text-[#515151] font-bold">
+                                ${data.total_view || 'View not available'}
+                            </h3>
+                        </div>
+                    </div>
+
+                    <p class="py-4 text-[#706F6F]">
+                        U.S. President Joe Biden announced Wednesday that he is sending $2.98 billion US in new... read full story
+                    </p>
+
+                    <div class="divider"></div>
+
+                    <div class="modal-action">
+                        <form method="dialog" class="w-full flex justify-end">
+                            <button class="btn bg-primary-color text-white font-extrabold">Close</button>
+                        </form>
+                    </div>
+                </div>
+            </dialog>
+        </section>
+
     </main>
     <footer class="footer bg-neutral text-neutral-content p-10">
         <aside>
