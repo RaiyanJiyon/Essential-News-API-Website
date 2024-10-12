@@ -1,121 +1,91 @@
+// Function to load news categories
 const loadCategory = async () => {
     try {
         const response = await fetch('https://openapi.programming-hero.com/api/news/categories');
         const jsonData = await response.json();
-        const categories = jsonData.data.news_category;
-        displayCategories(categories);
+        const data = jsonData.data;
+        const newsData = data.news_category;
+        displayCategory(newsData); // Display categories after fetching
     } catch (error) {
-        console.error('Error loading data', error);
+        console.error("Load category error", error);
     }
 }
 
-const displayCategories = (categories) => {
-    const newsCategories = document.getElementById('news-categories');
-    newsCategories.innerHTML = ''; // Clear existing categories if any
+// Function to display categories
+const displayCategory = (newsData) => {
+    const newsCategoriesContainer = document.getElementById('news-categories-container');
 
-    const categoriesList = document.createElement('ul');
-    categoriesList.classList.add('w-full', 'menu', 'menu-horizontal', 'px-1', 'justify-around', 'items-center', 'text-[#858585]')
+    // Create an unordered list for categories
+    const list = document.createElement('ul');
+    list.classList.add('w-full', 'menu', 'menu-horizontal', 'px-1', 'justify-around', 'items-center', 'text-[#858585]');
 
-    categories.forEach(category => {
-        const categoryItem = document.createElement('li');
-        categoryItem.classList.add('category-button');
-        categoryItem.setAttribute('data-category-id', category.category_id);
-        categoryItem.innerHTML = `<a>${category.category_name || ''}</a>`;
-        categoriesList.appendChild(categoryItem);
+    const fragment = document.createDocumentFragment();
+
+    // Loop over categories and create list items
+    newsData.forEach(data => {
+        const item = document.createElement('li');
+        item.classList.add('category-id');
+        item.setAttribute('category-id', data.category_id); // Set category id to each item
+        item.innerHTML = `<a>${data.category_name}</a>`; // Set category name
+        fragment.append(item);
     });
 
-    newsCategories.append(categoriesList);
+    list.append(fragment);
+    newsCategoriesContainer.append(list); // Append the list to the container
 
-    // Add event listeners after creating the buttons
-    addCategoryEventListeners();
+    addCategoryEventListener(); // Add event listeners after categories are rendered
 }
 
-// Updated to properly use the categoryId parameter
-const categoriesWiseNews = async (categoryId) => {
-    loadingSpinner(true);
-    try {
-        const response = await fetch(`https://openapi.programming-hero.com/api/news/category/${categoryId}`);
-        const jsonData = await response.json();
-        const newsData = jsonData.data;
-        
-        // Clear and display new news
-        const newsCard = document.getElementById('news-card');
-        newsCard.innerHTML = ''; // Clear existing news
-        setTimeout(() => {
-            displayNews(newsData);
-        }, 1000);
-    } catch (error) {
-        console.error('Category news Error', error);
-    }
-} 
-
-const addCategoryEventListeners = () => {
-    const buttons = document.querySelectorAll('.category-button');
-    
-    buttons.forEach((button) => {
-        button.addEventListener('click', function() {
-            // Remove active class from all buttons
-            buttons.forEach(btn => {
-                btn.classList.remove('text-primary-color', 'font-extrabold', 'underline');
-                btn.style.backgroundColor = ''; // Reset background color
-            });
-            
-            // Add active class to clicked button
-            this.classList.add('text-primary-color', 'font-extrabold', 'underline');
-            
-            const categoryId = this.getAttribute('data-category-id');
-            if (categoryId) {
-                categoriesWiseNews(categoryId);
-            } else if (this.textContent === 'Home') {
-                loadNews(); // Assuming you want to load default news for Home
-            } else {
-                console.error('Category ID not found');
-            }
-        });
-    });
-}
-
-const loadNews = async () => {
+// Function to load news for a specific category
+const loadNews = async (category_id, categoryName) => {
     loadingSpinner(true);
 
     try {
-        const response = await fetch('https://openapi.programming-hero.com/api/news/category/01');
+        const response = await fetch(`https://openapi.programming-hero.com/api/news/category/${category_id}`);
         const jsonData = await response.json();
         const newsData = jsonData.data;
 
         setTimeout(() => {
-            displayNews(newsData);
+            displayNews(newsData, categoryName); // Pass category name to displayNews
         }, 1000);
     } catch (error) {
-        console.error('Data load error', error);
+        console.error("Load news error", error);
     }
 }
 
-const displayNews = (newsData) => {
-    const newsCard = document.getElementById('news-card');
+// Function to display news cards and dynamic total items message
+const displayNews = (newsData, selectedCategoryName) => {
+    const newsCardContainer = document.getElementById('news-card-container');
     const noSearchMessage = document.getElementById('no-search-message');
-    
-    if (!newsData || newsData.length === 0) {
+    const totalItemsMessage = document.getElementById('total-items-message'); // New element
+
+    newsCardContainer.innerHTML = ''; // Clear previous news
+
+    // Update the message with the total number of items and the category name
+    totalItemsMessage.innerHTML = `${newsData.length} items found for category ${selectedCategoryName}`;
+
+    if (newsData.length === 0) {
         loadingSpinner(false);
         noSearchMessage.classList.remove('hidden');
-        newsCard.classList.add('hidden');
+        newsCardContainer.classList.add('hidden');
         return;
     }
 
     noSearchMessage.classList.add('hidden');
-    newsCard.classList.remove('hidden');
-    
+    newsCardContainer.classList.remove('hidden');
+
+    const fragment = document.createDocumentFragment();
+
+    // Loop over the news data and create news cards
     newsData.forEach(data => {
-        const truncatedDetails = data.details 
-        ? (data.details.length > 100 
-            ? data.details.slice(0, 800) + '...' 
-            : data.details)
-        : 'Details not available';
+        const truncatedDetails = data.details?.slice(0, 800) || 'Details not available';
 
         const cardDiv = document.createElement('div');
         cardDiv.classList.add('hero', 'bg-white', 'mt-14', 'rounded-xl');
+
+        // Inner HTML for each news card
         cardDiv.innerHTML = `
-            <div class="hero-content flex-col lg:flex-row">
+        <div class="hero-content flex-col lg:flex-row">
                 <img src="${data.thumbnail_url}" class="max-w-sm rounded-lg shadow-2xl" />
                 <div>
                     <h1 class="text-2xl font-bold">${data.title || 'Title not available'}</h1>
@@ -145,48 +115,71 @@ const displayNews = (newsData) => {
                             <h3 class="text-lg text-[#515151] font-bold">
                                 ${data.total_view || 'View not available'}
                             </h3>
-
-                            </div>
-                            <button onclick="openModal('${data._id}')" class="btn btn-outline btn-primary">Read More</button>
+                        </div>
+                        <button onclick="openModal('${data._id}')" class="btn btn-outline btn-primary">Read More</button>
                     </div>
                 </div>
             </div>
         `;
 
-        newsCard.appendChild(cardDiv);
+        fragment.append(cardDiv);
     });
 
     loadingSpinner(false);
+    
+    newsCardContainer.append(fragment); // Append all news cards to the container
 }
 
+// Function to add event listeners to each category
+const addCategoryEventListener = () => {
+    const allItems = document.querySelectorAll('.category-id');
+
+    allItems.forEach(item => {
+        item.addEventListener('click', function() {
+            // Remove active class from all
+            allItems.forEach(item => {
+                item.classList.remove('text-primary-color', 'font-extrabold', 'underline');
+            });
+
+            // Add active class to the clicked item
+            this.classList.add('text-primary-color', 'font-extrabold', 'underline');
+
+            // Get the category ID and load news
+            const categoryId = this.getAttribute('category-id');
+            const categoryName = this.textContent; // Get the category name
+
+            if (categoryId) {
+                loadNews(categoryId, categoryName); // Load news for the selected category
+            } else {
+                console.error('Category ID not found');
+            }
+        });
+    });
+}
+
+// Function to show or hide the loading spinner
 const loadingSpinner = (isLoading) => {
     const spinner = document.getElementById('spinner');
 
     if (isLoading) {
-        spinner.classList.remove('hidden');
+        spinner.classList.remove('hidden');    
     } else {
-        spinner.classList.add('hidden');
+        spinner.classList.add('hidden');    
     }
 }
 
-// modal
-// Modal open function
+// Function to open the modal with more news details
 const openModal = async (news_id) => {
     try {
         const response = await fetch(`https://openapi.programming-hero.com/api/news/${news_id}`);
         const jsonData = await response.json();
-        
-        if (jsonData.status && jsonData.data && jsonData.data.length > 0) {
-            displayMoreNews(jsonData.data[0]);
-        } else {
-            console.error('No news data found');
-        }
+        displayMoreNews(jsonData.data[0])
     } catch (error) {
         console.error('Modal open error', error);
     }
 }
 
-// Display modal content function
+// Function to display more news details in a modal
 const displayMoreNews = (newsData) => {
     const myModal = document.getElementById('my_modal_5');
     
@@ -229,39 +222,18 @@ const displayMoreNews = (newsData) => {
                     </h3>
                 </div>
             </div>
-            
-            <p class="py-4 text-[#706F6F]">
-                ${newsData.details || 'No details available'}
+            <p class="py-4 text-sm">
+                ${newsData.details}
             </p>
-            
-            <div class="divider"></div>
-            
             <div class="modal-action">
-                <form method="dialog" class="w-full flex justify-end">
-                    <button class="btn bg-primary-color text-white font-extrabold">Close</button>
-                </form>
+                <button class="btn btn-outline bg-primary-color text-white font-bold" onclick="window.my_modal_5.close()">Close</button>
             </div>
         </div>
     `;
-    
-    myModal.showModal();
+
+    window.my_modal_5.showModal(); // Show the modal
 }
 
-
-// Helper function to generate star SVGs
-const generateStars = (count) => {
-    let stars = '';
-    for (let i = 0; i < count; i++) {
-        stars += `
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                stroke-width="1.5" stroke="currentColor" class="size-6">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
-            </svg>
-        `;
-    }
-    return stars;
-}
-
+// Load categories when the page loads
 loadCategory();
-loadNews();
+loadNews('08', 'All News');
